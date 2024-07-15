@@ -1,32 +1,40 @@
 import React, { useRef } from "react";
-import { useFilteredItems } from "./hook";
+import { useFilterItems } from "./hook";
 
 export default function App() {
-  const newItemInputRef = useRef();
-  const { filterQuery, setFilterQuery, filteredItems, setItems } =
-    useFilteredItems(newItemInputRef);
+  const inputRef = useRef();
+  const { query, setQuery, filteredItems, setItems } = useFilterItems();
 
-  function handleSetFilterQuery(event) {
+  function handleAddNewItem(event) {
     event.preventDefault();
-    setFilterQuery(event.target.value);
+    const inputRefValue = inputRef.current.value;
+    setItems((prevItems) => {
+      return [...prevItems, inputRefValue];
+    });
+    inputRef.current.value = "";
+  }
+
+  function handleSetQuery(event) {
+    event.preventDefault();
+    setQuery(event.target.value);
   }
 
   return (
     <>
-      {renderSearch(filterQuery, handleSetFilterQuery)}
-      {renderForm(newItemInputRef, setItems)}
+      {renderSearch(query, handleSetQuery)}
+      {renderForm(inputRef, setItems, handleAddNewItem)}
       {renderFilteredItems(filteredItems)}
     </>
   );
 }
 
-function renderSearch(filterQuery, handleSetFilterQuery) {
+function renderSearch(query, handleSetQuery) {
   return (
     <p className="search">
       <span>Search:</span>
       <input
-        value={filterQuery}
-        onChange={handleSetFilterQuery}
+        value={query}
+        onChange={handleSetQuery}
         type="search"
         name="filter-search"
       />
@@ -34,30 +42,21 @@ function renderSearch(filterQuery, handleSetFilterQuery) {
   );
 }
 
-function renderForm(newItemInputRef, setItems) {
-  function handleAddNewItem(event) {
-    const newItemInputRefValue = newItemInputRef.current.value;
-    event.preventDefault();
-    setItems((prevItems) => {
-      return [...prevItems, newItemInputRefValue];
-    });
-    newItemInputRef.current.value = "";
-  }
-
+function renderForm(inputRef, setItems, handleAddNewItem) {
   return (
     <form onSubmit={handleAddNewItem}>
       <span>New Item:</span>
-      <input type="text" ref={newItemInputRef} name="addNew" />
+      <input type="text" ref={inputRef} name="addNew" />
       <button type="submit">Add New</button>
     </form>
   );
 }
 
-function renderFilteredItems(items) {
+function renderFilteredItems(filteredItems) {
   return (
     <>
       <h3>Items</h3>
-      {items.map((item, index) => {
+      {filteredItems.map((item, index) => {
         return <div key={index}>{item}</div>;
       })}
     </>

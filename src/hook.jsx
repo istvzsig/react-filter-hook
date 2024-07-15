@@ -1,26 +1,24 @@
 import { useState, useMemo } from "react";
 
-export function useFilteredItems() {
+export function useFilterItems() {
   const [items, setItems] = useState([]);
-  const [filterQuery, setFilterQuery] = useState("");
+  const [query, setQuery] = useState("");
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const filteredItems = useMemo(() => {
     return items.filter(
       (item) => {
-        return item
-          .toLocaleLowerCase()
-          .includes(filterQuery.toLocaleLowerCase());
+        return item.toLocaleLowerCase().includes(query.toLocaleLowerCase());
       },
-      [items, filterQuery]
+      [items, query]
     );
   });
 
   return {
     items,
     setItems,
-    filterQuery,
-    setFilterQuery,
+    query,
+    setQuery,
     filteredItems,
   };
 }
